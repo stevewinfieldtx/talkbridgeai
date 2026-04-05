@@ -418,6 +418,7 @@ let lastSpokenText = '';   // echo guard — what TTS just said
 let lastSpokenTime = 0;    // when TTS finished
 let lastSourceText = '';   // dedup — last text we translated
 let lastSourceTime = 0;    // when we last started a translation
+let translating = false;   // hard lock — true from recognition result until TTS finishes
 
 // ============================================================
 //  DOM
@@ -523,7 +524,9 @@ function speak(text, lang, onDone){
     if(done) return;      // only run once per speak call
     if(myId !== speakId) return;  // stale call
     done = true;
+    console.log('[speak] finish called for:', text.slice(0,30));
     speaking = false;
+    translating = false;
     ttsAudio = null;
     lastSpokenTime = Date.now();
     if(onDone) onDone();
@@ -572,7 +575,7 @@ function resumeMic(){
   if(!listening) return;
   // 2s delay lets speaker audio fully decay before mic goes live
   setTimeout(()=>{
-    if(speaking) return;
+    if(speaking || translating) return;
     recognition = createRecognition();
     if(recognition) try{ recognition.start(); }catch(e){}
   }, 2000);
@@ -629,6 +632,7 @@ function createRecognition(){
   };
 
   rec.onresult = (e)=>{
+    if(translating) return;  // hard lock — translation in flight
     if(rec !== recognition) return;
     if(speaking) return;
     if(processed) return;
@@ -658,6 +662,7 @@ function createRecognition(){
         return;
       }
       processed = true;
+      translating = true;  // hard lock on
       lastSourceText = text;
       lastSourceTime = Date.now();
       $interim.classList.remove('show');
@@ -671,8 +676,10 @@ function createRecognition(){
       const toLang = (fromLang.code === langA) ? byCode(langB) : byCode(langA);
 
       translate(sourceText, fromLang, toLang).then(translated=>{
+        console.log('[translate] result:', sourceText, '→', translated);
         addMessage(sourceText, translated, fromLang, toLang);
         speak(translated, toLang, ()=>{
+          translating = false;  // hard lock off
           currentRecLang = toLang;
           $status.textContent = listening ? `Listening ${toLang.flag}` : 'Ready';
         });
@@ -692,7 +699,7 @@ function createRecognition(){
 
   rec.onend = ()=>{
     if(rec !== recognition) return;
-    if(speaking) return;
+    if(speaking || translating) return;
     // Don't restart if we just processed a translation (iOS fires onend before speak starts)
     if(Date.now() - lastSourceTime < 2000) return;
     if(listening){
