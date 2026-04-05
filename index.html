@@ -414,6 +414,8 @@ let listening = false;
 let speaking  = false;
 let recognition = null;
 let ttsAudio = null;
+let lastSpokenText = '';   // echo guard — what TTS just said
+let lastSpokenTime = 0;    // when TTS finished
 
 // ============================================================
 //  DOM
@@ -499,6 +501,7 @@ function speak(text, lang, onDone){
   if(!text){ if(onDone) onDone(); return; }
 
   speaking = true;
+  lastSpokenText = text;  // store for echo guard
   $status.textContent = 'Speaking…';
 
   if(recognition){
@@ -509,7 +512,7 @@ function speak(text, lang, onDone){
   const params = new URLSearchParams({ text, lang: lang.tts });
   ttsAudio = new Audio(`/api/tts?${params}`);
 
-  ttsAudio.onended = ()=>{ speaking=false; ttsAudio=null; if(onDone) onDone(); resumeMic(); };
+  ttsAudio.onended = ()=>{ speaking=false; ttsAudio=null; lastSpokenTime=Date.now(); if(onDone) onDone(); resumeMic(); };
   ttsAudio.onerror = ()=>{
     console.warn('ElevenLabs TTS failed, trying browser TTS');
     ttsAudio = null;
@@ -536,11 +539,33 @@ function stopTTS(){
 
 function resumeMic(){
   if(!listening) return;
+  // 2s delay lets speaker audio fully decay before mic goes live
   setTimeout(()=>{
     if(speaking) return;
     recognition = createRecognition();
     if(recognition) try{ recognition.start(); }catch(e){}
-  }, 1200);
+  }, 2000);
+}
+
+// ============================================================
+//  ECHO GUARD — reject recognition that matches what TTS just said
+// ============================================================
+function isEcho(transcript){
+  if(!lastSpokenText) return false;
+  // Only check within 4 seconds of TTS ending
+  if(Date.now() - lastSpokenTime > 4000) return false;
+  const norm = s => s.toLowerCase().replace(/[^a-z0-9\u00C0-\u024F\u0400-\u04FF\u4E00-\u9FFF\u3040-\u30FF\uAC00-\uD7AF]/g,' ').replace(/\s+/g,' ').trim();
+  const a = norm(transcript);
+  const b = norm(lastSpokenText);
+  if(!a || !b) return false;
+  // Substring match
+  if(b.includes(a) || a.includes(b)) return true;
+  // Trigram overlap (fuzzy)
+  const tri = s => { const t=new Set(); for(let i=0;i<s.length-2;i++) t.add(s.slice(i,i+3)); return t; };
+  const tA=tri(a), tB=tri(b);
+  if(!tA.size||!tB.size) return false;
+  let hit=0; tA.forEach(t=>{ if(tB.has(t)) hit++; });
+  return (hit / (tA.size + tB.size - hit)) >= 0.45;
 }
 
 // ============================================================
@@ -590,6 +615,11 @@ function createRecognition(){
     }
 
     if(final.trim()){
+      // Echo guard — reject if this sounds like what TTS just said
+      if(isEcho(final.trim())){
+        console.log('[echo guard] rejected:', final.trim());
+        return;
+      }
       processed = true;
       $interim.classList.remove('show');
       $status.textContent = 'Translating…';
