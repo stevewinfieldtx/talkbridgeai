@@ -1,0 +1,6 @@
+{
+  "name": "talkbridge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real-time voice translation. One device, two people."
+}
