@@ -498,12 +498,15 @@ async function translate(text, fromLang, toLang){
 // ============================================================
 //  TTS — ElevenLabs via /api/tts
 // ============================================================
+let speakId = 0;  // unique ID per speak call — prevents double-fire
+
 function speak(text, lang, onDone){
   stopTTS();
   if(!text){ if(onDone) onDone(); return; }
 
+  const myId = ++speakId;
   speaking = true;
-  lastSpokenText = text;  // store for echo guard
+  lastSpokenText = text;
   $status.textContent = 'Speaking…';
 
   if(recognition){
@@ -512,29 +515,55 @@ function speak(text, lang, onDone){
   }
 
   const params = new URLSearchParams({ text, lang: lang.tts });
-  ttsAudio = new Audio(`/api/tts?${params}`);
+  const audio = new Audio(`/api/tts?${params}`);
+  ttsAudio = audio;
 
-  ttsAudio.onended = ()=>{ speaking=false; ttsAudio=null; lastSpokenTime=Date.now(); if(onDone) onDone(); resumeMic(); };
-  ttsAudio.onerror = ()=>{
-    console.warn('ElevenLabs TTS failed, trying browser TTS');
+  let done = false;
+  function finish(){
+    if(done) return;      // only run once per speak call
+    if(myId !== speakId) return;  // stale call
+    done = true;
+    speaking = false;
     ttsAudio = null;
+    lastSpokenTime = Date.now();
+    if(onDone) onDone();
+    resumeMic();
+  }
+
+  function fallbackBrowserTTS(){
+    if(done) return;
+    if(myId !== speakId) return;
+    // Kill the audio element completely so it can't also play
+    try{ audio.pause(); audio.removeAttribute('src'); audio.load(); }catch(e){}
+    ttsAudio = null;
+    console.warn('ElevenLabs TTS failed, trying browser TTS');
     if(window.speechSynthesis){
       const u = new SpeechSynthesisUtterance(text);
       u.lang = lang.rec;
       u.rate = 0.95;
-      u.onend = ()=>{ speaking=false; if(onDone) onDone(); resumeMic(); };
-      u.onerror = ()=>{ speaking=false; if(onDone) onDone(); resumeMic(); };
+      u.onend = finish;
+      u.onerror = finish;
       window.speechSynthesis.speak(u);
     } else {
-      speaking=false; if(onDone) onDone(); resumeMic();
+      finish();
     }
-  };
+  }
 
-  ttsAudio.play().catch(()=> ttsAudio.onerror());
+  audio.onended = finish;
+  audio.onerror = fallbackBrowserTTS;
+
+  audio.play().catch(()=>{
+    // iOS autoplay blocked — use browser TTS instead
+    fallbackBrowserTTS();
+  });
 }
 
 function stopTTS(){
-  if(ttsAudio){ ttsAudio.pause(); ttsAudio.src=''; ttsAudio=null; }
+  speakId++;  // invalidate any in-flight speak
+  if(ttsAudio){
+    try{ ttsAudio.pause(); ttsAudio.removeAttribute('src'); ttsAudio.load(); }catch(e){}
+    ttsAudio = null;
+  }
   if(window.speechSynthesis) window.speechSynthesis.cancel();
   speaking=false;
 }
