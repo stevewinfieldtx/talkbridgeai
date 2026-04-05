@@ -416,6 +416,8 @@ let recognition = null;
 let ttsAudio = null;
 let lastSpokenText = '';   // echo guard — what TTS just said
 let lastSpokenTime = 0;    // when TTS finished
+let lastSourceText = '';   // dedup — last text we translated
+let lastSourceTime = 0;    // when we last started a translation
 
 // ============================================================
 //  DOM
@@ -615,12 +617,20 @@ function createRecognition(){
     }
 
     if(final.trim()){
+      const text = final.trim();
+      // Dedup — reject if same text was just translated (iOS double-fire)
+      if(text === lastSourceText && Date.now() - lastSourceTime < 8000){
+        console.log('[dedup] rejected same text:', text);
+        return;
+      }
       // Echo guard — reject if this sounds like what TTS just said
-      if(isEcho(final.trim())){
-        console.log('[echo guard] rejected:', final.trim());
+      if(isEcho(text)){
+        console.log('[echo guard] rejected:', text);
         return;
       }
       processed = true;
+      lastSourceText = text;
+      lastSourceTime = Date.now();
       $interim.classList.remove('show');
       $status.textContent = 'Translating…';
 
@@ -654,6 +664,8 @@ function createRecognition(){
   rec.onend = ()=>{
     if(rec !== recognition) return;
     if(speaking) return;
+    // Don't restart if we just processed a translation (iOS fires onend before speak starts)
+    if(Date.now() - lastSourceTime < 2000) return;
     if(listening){
       recognition = createRecognition();
       if(recognition) try{ recognition.start(); }catch(e){}
