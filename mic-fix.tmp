@@ -1,0 +1,9 @@
+// ── MIC STATE: green = SPEAK NOW (flash), red = WAIT, idle = normal ──
+var greenTimer=null;
+function setMicState(st){
+  if(greenTimer){clearTimeout(greenTimer);greenTimer=null;}
+  $micWrap.className='mic-wrap st-'+st;
+  if(st==='green'){$micLabel.textContent='SPEAK NOW';greenTimer=setTimeout(function(){setMicState('idle');},3000);}
+  else if(st==='red'){$micLabel.textContent='WAIT';}
+  else{$micLabel.textContent='';}
+}

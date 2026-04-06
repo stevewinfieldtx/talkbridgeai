@@ -1,0 +1,7 @@
+// ── MIC STATE: green (listening/ready), red (speaking/wait), idle (off) ──
+function setMicState(st){
+  $micWrap.className='mic-wrap st-'+st;
+  if(st==='green'){$micLabel.textContent='SPEAK NOW';}
+  else if(st==='red'){$micLabel.textContent='WAIT';}
+  else{$micLabel.textContent='';}
+}

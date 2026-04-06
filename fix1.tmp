@@ -1,0 +1,1 @@
+function finish(){if(done||myId!==speakId)return;done=true;speaking=false;translating=false;ttsAudio=null;lastSpokenTime=Date.now();setMicState('idle');if(onDone)onDone();resumeMic();}
