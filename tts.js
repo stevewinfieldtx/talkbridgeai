@@ -1,20 +1,13 @@
 // Vercel Serverless Function — ElevenLabs TTS
 // ELEVENLABS_API_KEY set in Vercel environment variables
 
-// ElevenLabs voice IDs — multilingual v2 model
-const VOICES = {
-  female: 'EXAVITQu4vr4xnSDxMaL',  // Bella — clear, warm
-  male:   'VR6AewLTigWG4xSOukaG',    // Arnold — natural
+// Language-specific voice selection
+// English gets a native English voice; other languages use multilingual Bella
+const VOICE_BY_LANG = {
+  'en-us': '21m00Tcm4TlvDq8ikWAM',  // Rachel — native American English, clear & natural
+  'en-gb': '21m00Tcm4TlvDq8ikWAM',  // Rachel for British too
 };
-
-// Map language codes to ElevenLabs language hints
-// The multilingual_v2 model auto-detects, but hints help
-const LANG_HINTS = {
-  'en-us':'en','es-mx':'es','es-es':'es','zh-cn':'zh','vi-vn':'vi',
-  'fr-fr':'fr','de-de':'de','it-it':'it','pt-br':'pt','ja-jp':'ja',
-  'ko-kr':'ko','th-th':'th','hi-in':'hi','ar-sa':'ar','ru-ru':'ru',
-  'nl-nl':'nl','uk-ua':'uk',
-};
+const DEFAULT_VOICE = 'EXAVITQu4vr4xnSDxMaL'; // Bella — great multilingual voice
 
 module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') {
@@ -25,7 +18,7 @@ module.exports = async function handler(req, res) {
   }
 
   const params = req.method === 'GET' ? req.query : { ...req.query, ...req.body };
-  const { text, lang, gender } = params;
+  const { text, lang } = params;
 
   if (!text || !lang) {
     return res.status(400).json({ error: 'Missing required params: text, lang' });
@@ -37,7 +30,8 @@ module.exports = async function handler(req, res) {
   }
 
   const safeText = text.slice(0, 5000);
-  const voiceId = VOICES[gender] || VOICES.female;
+  // Pick voice based on target language — English gets a native English speaker
+  const voiceId = VOICE_BY_LANG[lang] || DEFAULT_VOICE;
   const modelId = 'eleven_multilingual_v2';
 
   try {

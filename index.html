@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0b0b14;--surface:#12121e;--card:#181828;--blue:#6499ff;--blue-dim:rgba(100,153,255,.10);--blue-glow:rgba(100,153,255,.25);--pink:#ff6b8a;--pink-dim:rgba(255,107,138,.10);--pink-glow:rgba(255,107,138,.25);--amber:#fbbf24;--text:#eaeaf2;--text2:#a0a0bc;--dim:#5e5e7a;--muted:#3a3a4e;--border:rgba(255,255,255,.07);--r:12px;--r-lg:18px;--font:'Space Grotesk',system-ui,sans-serif;--mono:'JetBrains Mono','Courier New',monospace}
+:root{--bg:#0b0b14;--surface:#12121e;--blue:#6499ff;--blue-dim:rgba(100,153,255,.10);--blue-glow:rgba(100,153,255,.25);--pink:#ff6b8a;--pink-dim:rgba(255,107,138,.10);--pink-glow:rgba(255,107,138,.25);--green:#4ade80;--red:#f43f5e;--amber:#fbbf24;--text:#eaeaf2;--text2:#a0a0bc;--dim:#5e5e7a;--muted:#3a3a4e;--border:rgba(255,255,255,.07);--r:12px;--r-lg:18px;--font:'Space Grotesk',system-ui,sans-serif;--mono:'JetBrains Mono','Courier New',monospace}
 html{font-size:16px;scroll-behavior:smooth}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 15% 5%,rgba(100,153,255,.05),transparent 50%),radial-gradient(ellipse at 85% 95%,rgba(255,107,138,.05),transparent 50%),radial-gradient(circle at 50% 50%,rgba(120,100,255,.03),transparent 60%)}
@@ -31,9 +31,7 @@ header{text-align:center;padding:14px 0 4px}
 .swap-btn:hover{color:var(--blue);border-color:var(--blue);transform:rotate(180deg)}
 .mode-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r-lg) var(--r-lg);margin-bottom:6px}
 .mode-left{display:flex;align-items:center;gap:6px}
-.mode-icon{font-size:.85rem}
-.mode-text{font-size:.72rem;font-weight:600;color:var(--dim)}
-.mode-desc{font-size:.62rem;color:var(--muted)}
+.mode-icon{font-size:.85rem}.mode-text{font-size:.72rem;font-weight:600;color:var(--dim)}.mode-desc{font-size:.62rem;color:var(--muted)}
 .mode-toggle{position:relative;width:44px;height:24px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid var(--border);cursor:pointer;transition:all .3s;flex-shrink:0}
 .mode-toggle.on{background:rgba(251,191,36,.15);border-color:rgba(251,191,36,.3)}
 .mode-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--dim);transition:all .3s}
@@ -46,12 +44,10 @@ header{text-align:center;padding:14px 0 4px}
 .col-hdr-b{color:var(--pink);background:var(--pink-dim);border-bottom:2px solid rgba(255,107,138,.2)}
 .col-hdr .hdr-flag{font-size:.85rem}.col-hdr .hdr-name{flex:1}
 .transcript{flex:1;overflow-y:auto;padding:0 0 4px;display:flex;flex-direction:column;gap:0;scroll-behavior:smooth;min-height:120px}
-.transcript::-webkit-scrollbar{width:3px}
-.transcript::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:3px}
+.transcript::-webkit-scrollbar{width:3px}.transcript::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:3px}
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;flex:1;color:var(--muted);opacity:.5;padding:50px 0}
 .empty svg{opacity:.4}.empty p{font-size:.8rem}
 .msg-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03);animation:rowIn .35s ease-out}
-.msg-row:last-of-type{border-bottom:none}
 .msg-cell{padding:10px 12px;border-radius:var(--r);font-size:.84rem;line-height:1.55;word-break:break-word;min-height:38px;position:relative}
 .msg-cell.spoken{background:rgba(255,255,255,.04);border:1px solid var(--border)}
 .msg-cell.spoken::before{content:'🎙';position:absolute;top:6px;right:8px;font-size:.65rem;opacity:.5}
@@ -66,22 +62,35 @@ header{text-align:center;padding:14px 0 4px}
 .interim{grid-column:1/-1;padding:8px 14px;border-radius:var(--r);margin:4px 0;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.08);color:var(--muted);font-size:.8rem;font-style:italic;display:none;align-items:center;gap:8px}
 .interim.show{display:flex}
 .interim-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex-shrink:0;animation:blink 1s ease-in-out infinite}
-.dock{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 0 20px;position:sticky;bottom:0;background:linear-gradient(to top,var(--bg) 65%,transparent);z-index:10}
-.mic{position:relative;width:62px;height:62px;border-radius:50%;border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s}
+/* ═══ MIC DOCK WITH STATE RING ═══ */
+.dock{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 0 28px;position:sticky;bottom:0;background:linear-gradient(to top,var(--bg) 65%,transparent);z-index:10}
+.mic-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.state-ring{position:absolute;width:86px;height:86px;border-radius:50%;border:3px solid var(--muted);transition:all .3s;pointer-events:none}
+.mic-wrap.st-blue .state-ring{border-color:var(--blue);box-shadow:0 0 20px var(--blue-glow)}
+.mic-wrap.st-red .state-ring{border-color:var(--red);box-shadow:0 0 20px rgba(244,63,94,.35);animation:redPulse 1.2s ease-in-out infinite}
+.mic-wrap.st-green .state-ring{border-color:var(--green);box-shadow:0 0 24px rgba(74,222,128,.4)}
+.mic-wrap.st-idle .state-ring{border-color:var(--muted);box-shadow:none}
+.mic-label{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:.62rem;font-weight:700;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;transition:color .3s}
+.mic-wrap.st-blue .mic-label{color:var(--blue)}
+.mic-wrap.st-red .mic-label{color:var(--red)}
+.mic-wrap.st-green .mic-label{color:var(--green)}
+.mic-wrap.st-idle .mic-label{color:var(--muted)}
+.mic{position:relative;width:62px;height:62px;border-radius:50%;border:2px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s;z-index:2}
 .mic:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);transform:scale(1.06)}
 .mic:active{transform:scale(.95)}
 .mic.on{background:var(--blue-dim);border-color:var(--blue);color:var(--blue);box-shadow:0 0 40px var(--blue-glow)}
 .mic .icon-stop{display:none}.mic.on .icon-mic{display:none}.mic.on .icon-stop{display:block}
-.mic.on .ring{animation:ringPulse 2s ease-out infinite}.mic.on .ring2{animation:ringPulse 2s ease-out infinite .6s}
 .ring,.ring2{position:absolute;inset:0;border-radius:50%;border:2px solid var(--blue);pointer-events:none;opacity:0}
+.mic.on .ring{animation:ringPulse 2s ease-out infinite}.mic.on .ring2{animation:ringPulse 2s ease-out infinite .6s}
 .clear{width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s}
 .clear:hover{color:#ff7b7b;border-color:rgba(255,100,100,.3);background:rgba(255,100,100,.06)}
 .status{font-size:.68rem;color:var(--dim);min-width:50px;text-align:center;font-family:var(--mono);letter-spacing:.02em}
-footer{text-align:center;padding:2px 0 10px;font-size:.6rem;color:var(--muted);opacity:.35;letter-spacing:.02em}
+footer{text-align:center;padding:2px 0 10px;font-size:.6rem;color:var(--muted);opacity:.35}
 @keyframes rowIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
 @keyframes ringPulse{0%{transform:scale(1);opacity:.4}100%{transform:scale(1.7);opacity:0}}
-@media(max-width:420px){.wrap{padding:0 6px}.col-hdr{padding:6px 8px;font-size:.6rem}.msg-cell{padding:8px 10px;font-size:.8rem}.mic{width:56px;height:56px}.lang-bar{padding:6px 8px}.lang-sel{font-size:.78rem;padding:7px 24px 7px 8px}.hdr-name{display:none}.mode-desc{display:none}}
+@keyframes redPulse{0%,100%{opacity:1}50%{opacity:.5}}
+@media(max-width:420px){.wrap{padding:0 6px}.col-hdr{padding:6px 8px;font-size:.6rem}.msg-cell{padding:8px 10px;font-size:.8rem}.mic{width:56px;height:56px}.state-ring{width:78px;height:78px}.lang-bar{padding:6px 8px}.lang-sel{font-size:.78rem;padding:7px 24px 7px 8px}.hdr-name{display:none}.mode-desc{display:none}}
 </style>
 </head>
 <body>
@@ -92,7 +101,15 @@ footer{text-align:center;padding:2px 0 10px;font-size:.6rem;color:var(--muted);o
   <div class="oneway-banner" id="oneway-banner"></div>
   <div class="col-headers"><div class="col-hdr col-hdr-a"><span class="hdr-flag" id="hdr-a-flag">🇺🇸</span><span class="hdr-name" id="hdr-a-name">English</span></div><div class="col-hdr col-hdr-b"><span class="hdr-flag" id="hdr-b-flag">🇲🇽</span><span class="hdr-name" id="hdr-b-name">Español</span></div></div>
   <div class="transcript" id="feed"><div class="empty" id="empty"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg><p>Tap the mic and start talking</p></div><div class="interim" id="interim"><div class="interim-dot"></div><span id="interim-text">Listening…</span></div></div>
-  <div class="dock"><div class="status" id="status">Ready</div><button class="mic" id="mic"><div class="ring"></div><div class="ring2"></div><svg class="icon-mic" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="19" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="23" x2="16" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="icon-stop" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button><button class="clear" id="clear"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div class="dock">
+    <div class="status" id="status">Ready</div>
+    <div class="mic-wrap st-idle" id="mic-wrap">
+      <div class="state-ring"></div>
+      <button class="mic" id="mic"><div class="ring"></div><div class="ring2"></div><svg class="icon-mic" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="19" x2="12" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="23" x2="16" y2="23" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><svg class="icon-stop" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button>
+      <div class="mic-label" id="mic-label"></div>
+    </div>
+    <button class="clear" id="clear"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
   <footer>TalkBridge · NYN Impact — a WinTech Partners brand</footer>
 </div>
 <script>
@@ -126,6 +143,16 @@ var currentRecLang=null,speakId=0;
 var $a=document.getElementById('lang-a'),$b=document.getElementById('lang-b'),$swap=document.getElementById('swap'),$feed=document.getElementById('feed'),$empty=document.getElementById('empty'),$interim=document.getElementById('interim'),$interimText=document.getElementById('interim-text'),$mic=document.getElementById('mic'),$clear=document.getElementById('clear'),$status=document.getElementById('status');
 var $hdrAFlag=document.getElementById('hdr-a-flag'),$hdrAName=document.getElementById('hdr-a-name'),$hdrBFlag=document.getElementById('hdr-b-flag'),$hdrBName=document.getElementById('hdr-b-name');
 var $modeToggle=document.getElementById('mode-toggle'),$modeIcon=document.getElementById('mode-icon'),$modeText=document.getElementById('mode-text'),$modeDesc=document.getElementById('mode-desc'),$onewayBanner=document.getElementById('oneway-banner');
+var $micWrap=document.getElementById('mic-wrap'),$micLabel=document.getElementById('mic-label');
+
+// ── MIC STATE: idle, blue (listening), red (speaking), green (ready) ──
+function setMicState(st){
+  $micWrap.className='mic-wrap st-'+st;
+  if(st==='blue'){$micLabel.textContent='LISTENING';}
+  else if(st==='red'){$micLabel.textContent='WAIT';}
+  else if(st==='green'){$micLabel.textContent='SPEAK NOW';}
+  else{$micLabel.textContent='';}
+}
 
 function updateModeUI(){var la=byCode(langA),lb=byCode(langB);if(oneWay){$modeToggle.classList.add('on');$modeIcon.textContent='➡️';$modeText.textContent='One-way';$modeDesc.textContent='· Listens '+la.flag+' only';$onewayBanner.textContent='🔒 '+la.flag+' '+la.name+' → '+lb.flag+' '+lb.name;$onewayBanner.classList.add('show');}else{$modeToggle.classList.remove('on');$modeIcon.textContent='↔️';$modeText.textContent='Two-way';$modeDesc.textContent='· Auto-detects both';$onewayBanner.classList.remove('show');}}
 $modeToggle.onclick=function(){oneWay=!oneWay;localStorage.setItem('tb-oneway',oneWay);updateModeUI();if(listening){stopListening();setTimeout(startListening,300);}};
@@ -140,28 +167,28 @@ function restartIfListening(){if(!listening)return;stopListening();setTimeout(st
 
 function translate(text,targetLangCode){return fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl='+targetLangCode+'&dt=t&q='+encodeURIComponent(text)).then(function(res){if(!res.ok)throw new Error('HTTP '+res.status);return res.json();}).then(function(data){return{translated:data[0].filter(function(s){return s&&s[0]}).map(function(s){return s[0]}).join(''),detectedLang:data[2]||'unknown'};}).catch(function(err){console.error('Translation error:',err);return{translated:'[Translation failed]',detectedLang:'unknown'};});}
 
-function speak(text,lang,onDone){stopTTS();if(!text){if(onDone)onDone();return;}var myId=++speakId;speaking=true;lastSpokenText=text;$status.textContent='Speaking…';if(recognition){try{recognition.abort();}catch(e){}recognition=null;}
+function speak(text,lang,onDone){stopTTS();if(!text){if(onDone)onDone();return;}var myId=++speakId;speaking=true;lastSpokenText=text;$status.textContent='Speaking…';setMicState('red');if(recognition){try{recognition.abort();}catch(e){}recognition=null;}
 var params=new URLSearchParams({text:text,lang:lang.tts});var audio=new Audio('/api/tts?'+params);ttsAudio=audio;var done=false;
-function finish(){if(done||myId!==speakId)return;done=true;speaking=false;translating=false;ttsAudio=null;lastSpokenTime=Date.now();if(onDone)onDone();resumeMic();}
+function finish(){if(done||myId!==speakId)return;done=true;speaking=false;translating=false;ttsAudio=null;lastSpokenTime=Date.now();setMicState(listening?'green':'idle');if(onDone)onDone();resumeMic();}
 function fallbackBrowserTTS(){if(done||myId!==speakId)return;try{audio.pause();audio.removeAttribute('src');audio.load();}catch(e){}ttsAudio=null;if(window.speechSynthesis){var u=new SpeechSynthesisUtterance(text);u.lang=lang.rec;u.rate=0.95;u.onend=finish;u.onerror=finish;window.speechSynthesis.speak(u);setTimeout(function(){if(!done&&myId===speakId)finish();},Math.max(3000,text.length*80+2000));}else finish();}
 audio.onended=finish;audio.onerror=fallbackBrowserTTS;audio.play().then(function(){var dur=audio.duration;var ms=(dur&&isFinite(dur))?(dur*1000+3000):15000;setTimeout(function(){if(!done&&myId===speakId)finish();},ms);}).catch(fallbackBrowserTTS);}
 function stopTTS(){speakId++;if(ttsAudio){try{ttsAudio.pause();ttsAudio.removeAttribute('src');ttsAudio.load();}catch(e){}ttsAudio=null;}if(window.speechSynthesis)window.speechSynthesis.cancel();speaking=false;}
-function resumeMic(){if(!listening)return;setTimeout(function(){if(speaking||translating)return;recognition=createRecognition();if(recognition)try{recognition.start();}catch(e){}},2000);}
+function resumeMic(){if(!listening)return;setTimeout(function(){if(speaking||translating)return;setMicState('blue');recognition=createRecognition();if(recognition)try{recognition.start();}catch(e){}},2000);}
 
 function isEcho(transcript){if(!lastSpokenText||Date.now()-lastSpokenTime>4000)return false;var norm=function(s){return s.toLowerCase().replace(/[^a-z0-9\u00C0-\u024F\u0400-\u04FF\u4E00-\u9FFF\u3040-\u30FF\uAC00-\uD7AF]/g,' ').replace(/\s+/g,' ').trim();};var a=norm(transcript),b=norm(lastSpokenText);if(!a||!b)return false;if(b.indexOf(a)>=0||a.indexOf(b)>=0)return true;var tri=function(s){var t=new Set();for(var i=0;i<s.length-2;i++)t.add(s.slice(i,i+3));return t;};var tA=tri(a),tB=tri(b);if(!tA.size||!tB.size)return false;var hit=0;tA.forEach(function(t){if(tB.has(t))hit++;});return(hit/(tA.size+tB.size-hit))>=0.45;}
 
 var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 function createRecognition(){if(!SR)return null;var recLang=currentRecLang||byCode(langA);var rec=new SR();rec.lang=recLang.rec;rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;var processed=false;
-rec.onstart=function(){$mic.classList.add('on');$status.textContent='Listening '+recLang.flag;};
+rec.onstart=function(){$mic.classList.add('on');$status.textContent='Listening '+recLang.flag;setMicState('blue');};
 rec.onresult=function(e){if(translating||rec!==recognition||speaking||processed)return;var interim='',final='';for(var i=e.resultIndex;i<e.results.length;i++){var t=e.results[i][0].transcript;if(e.results[i].isFinal)final+=t;else interim+=t;}
 if(interim){$interim.classList.add('show');$interimText.textContent=interim;}
-if(final.trim()){var text=final.trim();if(text===lastSourceText&&Date.now()-lastSourceTime<8000)return;if(isEcho(text))return;processed=true;translating=true;lastSourceText=text;lastSourceTime=Date.now();$interim.classList.remove('show');$status.textContent='Translating…';speaking=true;if(recognition){try{recognition.abort();}catch(ex){}recognition=null;}
+if(final.trim()){var text=final.trim();if(text===lastSourceText&&Date.now()-lastSourceTime<8000)return;if(isEcho(text))return;processed=true;translating=true;lastSourceText=text;lastSourceTime=Date.now();$interim.classList.remove('show');$status.textContent='Translating…';setMicState('red');speaking=true;if(recognition){try{recognition.abort();}catch(ex){}recognition=null;}
 if(oneWay){var fromLang=byCode(langA),toLang=byCode(langB);translate(text,langB).then(function(result){addMessage(text,result.translated,fromLang,toLang);speak(result.translated,toLang,function(){translating=false;currentRecLang=fromLang;$status.textContent=listening?'Listening '+fromLang.flag:'Ready';});});}
 else{translate(text,langB).then(function(result){var tr=result.translated,det=result.detectedLang;var fromLang,toLang;if(det===langB||det===byCode(langB).code){fromLang=byCode(langB);toLang=byCode(langA);translate(text,langA).then(function(r2){addMessage(text,r2.translated,fromLang,toLang);speak(r2.translated,toLang,function(){translating=false;currentRecLang=toLang;$status.textContent=listening?'Listening '+toLang.flag:'Ready';});});return;}fromLang=byCode(langA);toLang=byCode(langB);addMessage(text,tr,fromLang,toLang);speak(tr,toLang,function(){translating=false;currentRecLang=toLang;$status.textContent=listening?'Listening '+toLang.flag:'Ready';});});}}};
 rec.onerror=function(e){if(rec!==recognition)return;if(e.error==='not-allowed'){$status.textContent='⚠ Mic denied';stopListening();}else if(e.error!=='no-speech'&&e.error!=='aborted')console.warn('Recognition error:',e.error);};
-rec.onend=function(){if(rec!==recognition||speaking||translating)return;if(Date.now()-lastSourceTime<2000)return;if(listening){recognition=createRecognition();if(recognition)try{recognition.start();}catch(ex){}}else{$mic.classList.remove('on');$status.textContent='Ready';$interim.classList.remove('show');}};return rec;}
-function startListening(){if(listening)return;listening=true;currentRecLang=byCode(langA);recognition=createRecognition();if(recognition)try{recognition.start();}catch(e){console.warn(e);}}
-function stopListening(){listening=false;if(recognition){try{recognition.abort();}catch(e){}recognition=null;}$mic.classList.remove('on');$status.textContent='Ready';$interim.classList.remove('show');}
+rec.onend=function(){if(rec!==recognition||speaking||translating)return;if(Date.now()-lastSourceTime<2000)return;if(listening){recognition=createRecognition();if(recognition)try{recognition.start();}catch(ex){}}else{$mic.classList.remove('on');$status.textContent='Ready';$interim.classList.remove('show');setMicState('idle');}};return rec;}
+function startListening(){if(listening)return;listening=true;currentRecLang=byCode(langA);setMicState('blue');recognition=createRecognition();if(recognition)try{recognition.start();}catch(e){console.warn(e);}}
+function stopListening(){listening=false;if(recognition){try{recognition.abort();}catch(e){}recognition=null;}$mic.classList.remove('on');$status.textContent='Ready';$interim.classList.remove('show');setMicState('idle');}
 function toggle(){if(window.speechSynthesis){var s=new SpeechSynthesisUtterance('');s.volume=0;window.speechSynthesis.speak(s);}if(listening)stopListening();else startListening();}
 function addMessage(sourceText,translatedText,fromLang,toLang){$empty.style.display='none';var row=document.createElement('div');row.className='msg-row';var spokenIsA=(fromLang.code===langA);var cellA=document.createElement('div');cellA.className='msg-cell col-a';var cellB=document.createElement('div');cellB.className='msg-cell col-b';
 if(spokenIsA){cellA.classList.add('spoken');cellA.textContent=sourceText;cellB.classList.add('translated');cellB.innerHTML=escHtml(translatedText)+replayBtnHtml();cellB.querySelector('.replay-btn').onclick=function(){speak(translatedText,toLang);};}else{cellB.classList.add('spoken');cellB.textContent=sourceText;cellA.classList.add('translated');cellA.innerHTML=escHtml(translatedText)+replayBtnHtml();cellA.querySelector('.replay-btn').onclick=function(){speak(translatedText,toLang);};}
