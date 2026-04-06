@@ -539,24 +539,44 @@ function speak(text, lang, onDone){
     // Kill the audio element completely so it can't also play
     try{ audio.pause(); audio.removeAttribute('src'); audio.load(); }catch(e){}
     ttsAudio = null;
-    console.warn('ElevenLabs TTS failed, trying browser TTS');
+    console.warn('[speak] ElevenLabs failed, using browser TTS');
     if(window.speechSynthesis){
       const u = new SpeechSynthesisUtterance(text);
       u.lang = lang.rec;
       u.rate = 0.95;
-      u.onend = finish;
-      u.onerror = finish;
+      u.onend = ()=>{ console.log('[speak] browser TTS onend'); finish(); };
+      u.onerror = ()=>{ console.log('[speak] browser TTS onerror'); finish(); };
       window.speechSynthesis.speak(u);
+      // Safety: iOS Safari sometimes never fires onend for speechSynthesis
+      // Estimate ~80ms per character as a rough speech duration
+      const safetyMs = Math.max(3000, text.length * 80 + 2000);
+      setTimeout(()=>{
+        if(!done && myId === speakId){
+          console.warn('[speak] safety timeout fired after', safetyMs, 'ms');
+          finish();
+        }
+      }, safetyMs);
     } else {
       finish();
     }
   }
 
-  audio.onended = finish;
+  audio.onended = ()=>{ console.log('[speak] audio onended'); finish(); };
   audio.onerror = fallbackBrowserTTS;
 
-  audio.play().catch(()=>{
-    // iOS autoplay blocked — use browser TTS instead
+  audio.play().then(()=>{
+    console.log('[speak] audio playing via ElevenLabs');
+    // Safety timeout for audio element too — in case onended never fires
+    const dur = audio.duration;
+    const safetyMs = (dur && isFinite(dur)) ? (dur * 1000 + 3000) : 15000;
+    setTimeout(()=>{
+      if(!done && myId === speakId){
+        console.warn('[speak] audio safety timeout after', safetyMs, 'ms');
+        finish();
+      }
+    }, safetyMs);
+  }).catch(()=>{
+    console.log('[speak] audio.play() rejected, falling back');
     fallbackBrowserTTS();
   });
 }
